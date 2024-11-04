@@ -45,26 +45,41 @@ char ** loadFileAA(char *filename, int *size)
 
 char (*loadFile2D(char *filename, int *size))[COLS]
 {
+	int CAPACITY = 10;
 	FILE *in = fopen(filename, "r");
 	if (!in)
 	{
 	    perror("Can't open file");
 	    exit(1);
 	}
-	
+
 	// TODO
 	// Allocate memory for an 2D array, using COLS as the width.
-	// Read the file line by line into a buffer.
-    //   Trim newline.
-	//   Expand array if necessary (realloc).
-	//   Copy each line from the buffer into the array (use strcpy).
-    // Close the file.
-	
-	// The size should be the number of entries in the array.
+	char (*arr)[COLS] = malloc(CAPACITY * sizeof(char[COLS]));
 	*size = 0;
+	int cap = CAPACITY;
+	char buffer[1000]; //given
+	// Read the file line by line into a buffer.
+	while (fgets(buffer, sizeof(buffer), in)){
+		if(*size >= cap){
+			cap = cap * 2;
+			arr = realloc(arr, cap * sizeof(char[COLS]));
+		}
+	
+    //   Trim newline.
+	//HELP!
+	//   Expand array if necessary (realloc).
+	//done prev. as Loading Large Arrays of Strings taught
+	//   Copy each line from the buffer into the array (use strcpy).
+	strcpy(arr[*size], buffer);
+	*size = *size + 1; //Increment the SIZE.
+    // Close the file.
+	}
+	fclose(in);
+	// The size should be the number of entries in the array.
 	
 	// Return pointer to the array.
-	return NULL;
+	return arr;
 }
 
 // Search the array for the target string.
@@ -77,7 +92,11 @@ char * substringSearchAA(char *target, char **lines, int size)
 
 char * substringSearch2D(char *target, char (*lines)[COLS], int size)
 {
-    
+    for (int i = 0; i < size; ++i){
+		if(strstr(lines[i], target) != NULL){
+			return lines[i];
+		}
+	}
     return NULL;
 }
 
@@ -89,5 +108,5 @@ void freeAA(char ** arr, int size)
 
 void free2D(char (*arr)[COLS])
 {
-
+	free(arr); //from Dynamic Arrays
 }
